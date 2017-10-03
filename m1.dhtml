@@ -29,10 +29,9 @@ my(
     $vars,
     $title,
     $dbObject,
+    @collection
     );
 my($debug)=0;
-
-$template='first.ex.tt2';
 
 #########################
 # debug                 #
@@ -65,9 +64,7 @@ $template = 'm1.tt2';
 ######################################
 
 $sample=("Is this really a black art?");
-
-# Initialize temp vars
-my @collection;
+$title=("m1");
 
 # Create dbObject
 $dbObject = DBI->connect("dbi:mysql:bible:localhost","web","nouser")
@@ -111,12 +108,16 @@ BOOKS: foreach my $sectionRef (@collection) {
             }
        }
 
+# Disconnect from DB
+$dbObject->disconnect();
+
 ###################################### 
 ## Prep vars for template (step 4a) ##
 ######################################
 
 $vars = {
-        collection => \@collection
+        collection => \@collection,
+        title => $title
         };
 
 ###################################### 
