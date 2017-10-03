@@ -1,0 +1,163 @@
+#!/usr/local/bin/perl  
+#!/usr/bin/perl
+###############################################
+# first example using templating, xhtml and css
+# © ckaduri, 2002-2016
+# version 0.9g
+#
+##############################################
+use strict;
+use Template;   #step 1
+use DBI;
+use CGI;
+our $templateLib;
+
+# precompile inspection
+	  $templateLib='/export/srv/www/main/tt2';
+
+###############################################
+# setup constants
+
+################################ 
+## Declaration of Variables   ##
+################################
+my(
+    $template,
+    $ttObject,
+    $cgiObject,
+    $sample,
+    $vars,
+    $title,
+    %where,
+    %alpha,
+    @alpha,
+    %provinces,
+    %booklist,
+    %meta,
+    $i
+    );
+my($debug)=0;
+
+$template='first.ex.tt2';
+
+#########################
+# debug                 #
+#########################
+
+if($debug){
+    }
+    
+#########################
+# Generate Magic Header #
+#########################
+$cgiObject=CGI->new();
+
+print STDOUT $cgiObject->header(-type=>"text/html",
+								-charset=>'utf8');
+
+################################ 
+## New Template Object(step 2)##
+################################
+my %config=(
+	INCLUDE_PATH => [ $templateLib ],
+    RELATIVE => 0
+    );
+    
+$ttObject = Template->new( \%config );
+$template = 'm0.tt2';
+
+###################################### 
+## Pretend do some work (step 3)	##
+######################################
+
+$sample=("Is this really a black art?");
+
+# Initialize temp vars
+
+@alpha=('a'..'z');
+$i=0;
+
+# Create hashes
+foreach my $alpha (@alpha) {
+            
+            $alpha{$i++}=($alpha);
+
+            };
+
+%meta= (
+        ALL=> 'Entire Bible',
+        OT => 'Jewish Stuff',
+        XT=> 'Christain Stuff',
+    );
+
+
+%provinces= (
+        AB => 'Alberta',
+        BC => 'British Columbia',
+        MB => 'Manitoba',
+        NB => 'New Brunswick',
+        NL => 'New Found Land and Labrador',
+        PE => 'Prince Edward Island',
+        NS => 'Nova Scotia',
+        QC => 'Quebec',
+        ON => 'Ontario',
+        SK => 'Saskatchewan',
+        );
+
+$collection[0]={section=>'All',name=>'Entire Bible'};
+
+$sqlSectionSelect=qq~ SELECT bsect as section, sectname as name FROM section ORDER by sectorder; ~;
+
+#make dbi object from boiler plate
+
+$sqlSectionObject = $dbObject->prepare($sqlSectionSelect)
+    or die "...."
+$sqlSectionObject->execute();
+
+SECTIONS: while (my $ref=$sqlSectionObject->fetchrow_hashref()){
+    push (@collection,$ref);
+    }
+
+$sqlBookSelect= qq~ SELECT bnm,bname FROM books where bsect = ? ORDER by num; ~;
+
+$sqlBookObject = $dbObject->prepare($sqlBookSelect);
+
+BOOKS: foreach my $sectionRef (@collection) { 
+    my $bsect = $sectionRef->{$section};
+    next BOOKS if ($bsect eq 'All');
+    $sqlBookObject->execute($bsect)
+        or die "Couldn't execute query '$sqlBookObject':$DBI::errstr\n";
+    while (my $ref=$sqlBookObject->fetchrow_hashref()) {
+        push (@{ $sectionRef->{books} }, $ref);
+        #$bnumCheck[ $ref->{'bnum'} ] = 1; m2
+        }
+}
+
+
+
+###################################### 
+## Prep vars for template (step 4a) ##
+######################################
+
+$vars = {
+        books => \%alpha,
+        sample => $sample,
+        title => $title,
+        provinces => \%provinces,
+        metalist => \%meta,
+        };
+
+###################################### 
+## Bind and pass flow (step 4b + 5) ##
+######################################
+
+$ttObject->process ( $template, $vars ) 
+	or die( $ttObject->error() );
+#die in development, production "or send to some error page"
+   
+######################################
+
+__END__
+
+
+
