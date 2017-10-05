@@ -1,0 +1,58 @@
+
+
+<!doctype html>
+<html>
+<head>
+    <title>Form Elements</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="http://code.jquery.com/mobile/latest/jquery.mobile.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js "></script>
+    <script type="text/javascript" src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
+</head>
+<body>
+    <section data-role="page" id="first" data-theme="c">
+        <header data-role="header">
+            <h1>Forms</h1>
+        </header>
+        <article data-role="content">
+            <h2>Mobile Application</h2>
+            <form method="get" action="dhtml/9.Forms.dhtml">
+                <input name="subject" type="hidden" value="Class" />
+
+                <fieldset>
+                    <legend>Where to search</legend>
+                    <label for="books">Books</label>
+                    <select tabindex="-1" multiple="multiple" name="book" id="book" data-native-menu="false">
+
+                    
+                       <optgroup label="Collection">
+                        [% FOREACH category IN collection %]
+                            <option value="[% category.section %]">[%category.name %]</option>
+                        [% END %]
+                    </optgroup>
+            
+                    [% FOREACH category IN collection %]
+                    [% NEXT UNLESS category.defined('books') %]
+                    <optgroup label="[% category.name %]">
+                        [% FOREACH book IN category.books %]
+                            <option value="[% book.bnum %]">[% book.bname %]</option>
+                        [% END %]
+                    </optgroup>
+                    [% END %]
+
+                    </select>
+                    <br />
+                    <label for="search">Search Words:</label>
+                    <input type="text" name="search" id="search" />
+                    <br />
+                </fieldset>
+                <div>
+                    <input type="submit" name="submit" value="Send Form" />
+                </div>
+            </form>
+        </article>
+    <footer data-role="footer"><h1>int620 - jQuery Mobile View</h1></footer>
+    </section>
+</body>
+</html>
+

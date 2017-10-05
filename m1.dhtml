@@ -29,9 +29,11 @@ my(
     $vars,
     $title,
     $dbObject,
-    @collection
+    @collection,
+    $mobile,
     );
 my($debug)=0;
+$mobile=1;
 
 #########################
 # debug                 #
@@ -57,7 +59,13 @@ my %config=(
     );
     
 $ttObject = Template->new( \%config );
-$template = 'm1.tt2';
+
+    if ($mobile) {
+        $template = 'm1-mobile.tt2';
+    }   
+    else {
+        $template = 'm1-desktop.tt2';
+    }
 
 ###################################### 
 ## Pretend do some work (step 3)	##
